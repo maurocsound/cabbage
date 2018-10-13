@@ -61,5 +61,5 @@ public:
     DrawableButton& getCloseFileEditorButton() { return close;   }
     DrawableButton& getEditGUIButton() { return editGUI; }
 
-    int32 uniqueFileId = -99;
+    AudioProcessorGraph::NodeID uniqueFileId;
 };

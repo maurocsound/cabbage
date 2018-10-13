@@ -73,7 +73,7 @@ public:
 
     uint32 sourceFilterID, destFilterID;
     int sourceFilterChannel, destFilterChannel;
-    AudioProcessorGraph::Connection connection { { 0, 0 }, { 0, 0 } };
+    AudioProcessorGraph::Connection connection { { {}, 0 }, { {}, 0 } };
     Point<float> lastInputPos, lastOutputPos;
     
 private:

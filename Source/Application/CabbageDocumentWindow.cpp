@@ -40,7 +40,7 @@ CabbageDocumentWindow::CabbageDocumentWindow (String name, String commandLinePar
     setTitleBarButtonsRequired (DocumentWindow::allButtons, false);
     setUsingNativeTitleBar (true);
     setResizable (true, true);
-    centreWithSize (getWidth(), getHeight());
+
     setVisible (true);
 
 

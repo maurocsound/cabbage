@@ -194,7 +194,7 @@ int CabbageMainComponent::getTabFileIndex (int32 nodeId)
 
     for ( auto tab : fileTabs)
     {
-        if (tab->uniqueFileId == nodeId)
+        if (tab->uniqueFileId.uid == nodeId)
         {
             foundFile = true;
             break;
@@ -279,7 +279,7 @@ void CabbageMainComponent::handleFileTabs (DrawableButton* drawableButton)
         if (FileTab* tabButton = drawableButton->findParentComponentOfClass<FileTab>())
         {
             const String filename = tabButton->getFilename();
-            int32 nodeId = fileTabs[currentFileIndex]->uniqueFileId;
+            AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
             if (AudioProcessorGraph::Node::Ptr f = audioGraph->graph.getNodeForId (nodeId))
             {
@@ -533,7 +533,7 @@ void CabbageMainComponent::timerCallback()
 
     if (fileTabs.size() > 0)
     {
-        int32 nodeId = fileTabs[currentFileIndex]->uniqueFileId;
+        AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
         if (audioGraph->graph.getNodeForId (nodeId) != nullptr && audioGraph->graph.getNodeForId (nodeId)->getProcessor()->isSuspended() == true)
         {
@@ -687,12 +687,17 @@ void CabbageMainComponent::resizeAllWindows (int height)
 //==============================================================================
 void CabbageMainComponent::createAudioGraph()
 {
-    const Point<int> lastPoint = audioGraph->getPositionOfCurrentlyOpenWindow (1);
 
-    if (lastPoint.getX() > 0)
+    if(currentFileIndex<fileTabs.size()-1)
     {
-        cabbageSettings->setProperty ("windowX", lastPoint.getX());
-        cabbageSettings->setProperty ("windowY", lastPoint.getY());
+        const Point<int> lastPoint = audioGraph->getPositionOfCurrentlyOpenWindow(
+                fileTabs[currentFileIndex]->uniqueFileId);
+
+        if (lastPoint.getX() > 0)
+        {
+            cabbageSettings->setProperty("windowX", lastPoint.getX());
+            cabbageSettings->setProperty("windowY", lastPoint.getY());
+        }
     }
 
     audioGraph = new AudioGraph (*this, cabbageSettings->getUserSettings(), false);
@@ -712,7 +717,7 @@ void CabbageMainComponent::showGraph()
 void CabbageMainComponent::createEditorForAudioGraphNode (Point<int> position)
 {
 
-    int32 nodeId = fileTabs[currentFileIndex]->uniqueFileId;;
+    AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;;
 
     if (AudioProcessorGraph::Node::Ptr f = audioGraph->graph.getNodeForId (nodeId))
     {
@@ -776,9 +781,9 @@ CabbagePluginEditor* CabbageMainComponent::getCabbagePluginEditor()
 
     if (audioGraph != nullptr && fileTabs[currentFileIndex])
     {
-        const int32 nodeId = fileTabs[currentFileIndex]->uniqueFileId;
+        const AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
-        if (nodeId != 99)
+        if (nodeId.uid != 99)
             if (AudioProcessorGraph::Node::Ptr f = audioGraph->graph.getNodeForId (nodeId))
             {
                 AudioProcessor* const processor = f->getProcessor();
@@ -793,7 +798,7 @@ CabbagePluginEditor* CabbageMainComponent::getCabbagePluginEditor()
 //==================================================================================
 CabbagePluginProcessor* CabbageMainComponent::getCabbagePluginProcessor()
 {
-    const int32 nodeId = fileTabs[currentFileIndex]->uniqueFileId;
+    const AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
     if (AudioProcessorGraph::Node::Ptr f = audioGraph->graph.getNodeForId (nodeId))
     {
@@ -811,9 +816,9 @@ int CabbageMainComponent::getStatusbarYPos()
 //=======================================================================================
 void CabbageMainComponent::setEditMode (bool enable)
 {
-    const int nodeId = fileTabs[currentFileIndex]->uniqueFileId;
+    const AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
-    if ( nodeId == -99)
+    if ( nodeId.uid == -99)
         return;
 
     const bool isCabbageFile = CabbageUtilities::hasCabbageTags (getCurrentCsdFile());
@@ -978,7 +983,7 @@ void CabbageMainComponent::openGraph (File fileToOpen)
         {
             openFile (files[i].getFullPathName());
             const int current = currentFileIndex;
-            fileTabs[currentFileIndex]->uniqueFileId = uuids[i];
+            fileTabs[currentFileIndex]->uniqueFileId.uid = uuids[i];
         }
     }
 
@@ -1380,12 +1385,12 @@ void CabbageMainComponent::runCsoundForNode (String file)
             //PluginWindow::closeAllCurrentlyOpenWindows();
             //audioGraph = nullptr;
             //createAudioGraph(); //in future versions we can simply edit the node in question and reconnect within the graph
-            int32 node = fileTabs[currentFileIndex]->uniqueFileId;
+            AudioProcessorGraph::NodeID node = fileTabs[currentFileIndex]->uniqueFileId;
 
-            if (node == -99)
+            if (node.uid == -99)
             {
                 Uuid uniqueID;
-                node = int32 (*uniqueID.getRawData());
+                node.uid = int32 (*uniqueID.getRawData());
                 fileTabs[currentFileIndex]->uniqueFileId = node;
             }
 
@@ -1426,7 +1431,7 @@ void CabbageMainComponent::stopCsoundForNode (String file)
 {
     if (fileTabs[currentFileIndex] && File (file).existsAsFile())
     {
-        const int32 nodeId = fileTabs[currentFileIndex]->uniqueFileId;
+        const AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
         if (audioGraph->getNodeForId (nodeId) != nullptr)
             audioGraph->getNodeForId (nodeId)->getProcessor()->suspendProcessing (true);

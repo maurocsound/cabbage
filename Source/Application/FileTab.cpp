@@ -27,7 +27,8 @@ FileTab::FileTab (String name, String filename, bool isCsdFile):
     close ("", DrawableButton::ButtonStyle::ImageStretched),
     showEditor ("", DrawableButton::ButtonStyle::ImageStretched),
     editGUI ("", DrawableButton::ButtonStyle::ImageStretched),
-    overlay()
+    overlay(),
+    uniqueFileId(-99)
 {
 
     addChildComponent (overlay);

@@ -106,7 +106,7 @@ public:
     {
         for (auto &fileTab : fileTabs)
         {
-            if(fileTab->uniqueFileId == nodeId)
+            if(fileTab->uniqueFileId.uid == nodeId)
                 return fileTab;
         }
         jassertfalse;

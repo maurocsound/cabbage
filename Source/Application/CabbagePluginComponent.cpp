@@ -49,16 +49,16 @@ void CabbagePluginComponent::mouseDown (const MouseEvent& e)
 
         if (r == 1)
         {
-            graph.removeFilter (pluginID);
+            graph.graph.removeNode (pluginID);
             return;
         }
         else if (r == 2)
         {
-            graph.disconnectFilter (pluginID);
+            graph.graph.disconnectNode (pluginID);
         }
         else if ( r == 3)
         {
-            if (AudioProcessorGraph::Node::Ptr f = graph.getNodeForId (pluginID))
+            if (AudioProcessorGraph::Node::Ptr f = graph.graph.getNodeForId (pluginID))
             {
                 if (auto f = graph.graph.getNodeForId (pluginID))
                     if (auto* w = graph.getOrCreateWindowFor (f, PluginWindow::Type::normal))
@@ -375,7 +375,7 @@ void ConnectorComponent::mouseDrag (const MouseEvent& e)
         double distanceFromStart, distanceFromEnd;
         getDistancesFromEnds (Point<float>(e.x, e.y), distanceFromStart, distanceFromEnd);
         const bool isNearerSource = (distanceFromStart < distanceFromEnd);
-        AudioProcessorGraph::NodeAndChannel dummy { 0, 0 };
+        AudioProcessorGraph::NodeAndChannel dummy { {}, 0 };
         panel.beginConnectorDrag (isNearerSource ? dummy : connection.source,
                                                        isNearerSource ? connection.destination : dummy,
                                                        e);
@@ -479,7 +479,7 @@ void PinComponent::paint (Graphics& g)
 
 void PinComponent::mouseDown (const MouseEvent& e)
 {
-    AudioProcessorGraph::NodeAndChannel dummy { 0, 0 };
+    AudioProcessorGraph::NodeAndChannel dummy { {}, 0 };
     panel.beginConnectorDrag (isInput ? dummy : pin, isInput ? pin : dummy, e);
 }
 

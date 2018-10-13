@@ -65,15 +65,15 @@ public:
 
 
     int getNumPlugins() const noexcept;
-    bool addPlugin (File inputFile, int32 nodeId);
-    AudioProcessorGraph::Node::Ptr createNode (const PluginDescription& desc, int32 uid);
-    AudioProcessorGraph::Node* createCabbageNode (const PluginDescription& desc, int32 nodeId);
-    AudioProcessorGraph::Node* createInternalNode (const PluginDescription& desc, int32 nodeId);
+    bool addPlugin (File inputFile, AudioProcessorGraph::NodeID nodeId);
+    AudioProcessorGraph::Node::Ptr createNode (const PluginDescription& desc, AudioProcessorGraph::NodeID uid);
+    AudioProcessorGraph::Node* createCabbageNode (const PluginDescription& desc, AudioProcessorGraph::NodeID nodeId);
+    AudioProcessorGraph::Node* createInternalNode (const PluginDescription& desc, AudioProcessorGraph::NodeID nodeId);
 
     const PluginDescription getPluginDescriptor (String type, String name, int32 nodeId, String inputfile = "");
-    void setDefaultConnections (int nodeId);
+    void setDefaultConnections (AudioProcessorGraph::NodeID nodeId);
     void createInternalFilters();
-    void showCodeEditorForNode (int32 nodeId);
+    void showCodeEditorForNode (AudioProcessorGraph::NodeID nodeId);
     StringArray pluginFiles;
     void updateBusLayout (AudioProcessor* selectedProcessor);
     int getNumberOfParameters();
@@ -82,8 +82,8 @@ public:
     void setXmlAudioSettings (XmlElement* xmlSettingsString);
     AudioDeviceSelectorComponent* getAudioDeviceSelector();
     String getDeviceManagerSettings();
-    void setNodePosition (const uint32 nodeID, Point<double> pos);
-    Point<double> getNodePosition (uint32 nodeId) const;
+    void setNodePosition (const AudioProcessorGraph::NodeID nodeID, Point<double> pos);
+    Point<double> getNodePosition (AudioProcessorGraph::NodeID nodeId) const;
     AudioProcessorGraph& getGraph() noexcept         { return graph; }
 
     //==============================================================================
@@ -104,8 +104,8 @@ public:
     void removeConnection (uint32 sourceFilterUID, int sourceFilterChannel,
                            uint32 destFilterUID, int destFilterChannel);
 
-    void removeFilter (const uint32 id);
-    void disconnectFilter (const uint32 id);
+    void removeFilter (const AudioProcessorGraph::NodeID id);
+    void disconnectFilter (const AudioProcessorGraph::NodeID id);
     void clear();
 
     //==============================================================================
@@ -114,10 +114,10 @@ public:
     void reloadAudioDeviceState (const String& preferredDefaultDeviceName,
                                  const AudioDeviceManager::AudioDeviceSetup* preferredSetupOptions);
     //==============================================================================
-    String getCsoundOutput (int32 nodeId);
+    String getCsoundOutput (AudioProcessorGraph::NodeID nodeId);
     //==============================================================================
     const AudioProcessorGraph::Node::Ptr getNode (const int index) const noexcept;
-    const AudioProcessorGraph::Node::Ptr getNodeForId (const uint32 uid) const noexcept;
+    const AudioProcessorGraph::Node::Ptr getNodeForId (const AudioProcessorGraph::NodeID nodeId) const noexcept;
     //==============================================================================
     void audioProcessorParameterChanged (AudioProcessor*, int, float) override {}
     void audioProcessorChanged (AudioProcessor*) override { changed(); }
@@ -138,8 +138,8 @@ public:
     PluginWindow* getOrCreateWindowFor (AudioProcessorGraph::Node*, PluginWindow::Type);
 //    void closeCurrentlyOpenWindowsFor (AudioProcessorGraph::NodeID);
     bool closeAnyOpenPluginWindows();
-    Point<int> getPositionOfCurrentlyOpenWindow (const uint32 nodeId);
-    bool closeCurrentlyOpenWindowsFor(const uint32 nodeId);
+    Point<int> getPositionOfCurrentlyOpenWindow (const AudioProcessorGraph::NodeID nodeId);
+    bool closeCurrentlyOpenWindowsFor(const AudioProcessorGraph::NodeID  nodeId);
     OptionalScopedPointer<PropertySet> settings;
     vector<AudioProcessorGraph::Connection> getConnections() { return graph.getConnections(); };
     AudioProcessorGraph graph;
@@ -154,7 +154,7 @@ public:
     CabbageMainComponent* getParent() {  return &owner;  }
 private:
     CabbageMainComponent& owner;
-    Array<int> internalNodeIds;
+    Array<AudioProcessorGraph::NodeID> internalNodeIds;
     CabbageIDELookAndFeel lookAndFeel;
     ScopedPointer<AudioPluginFormatManager> formatManager;
     //bool isCabbageFile = false;

@@ -60,16 +60,16 @@ AudioGraph::~AudioGraph()
 
 void AudioGraph::createInternalFilters()
 {
-    AudioProcessorGraph::Node* midiInputNode = createNode (getPluginDescriptor ("Internal", "Midi Input", internalNodeIds[InternalNodes::MIDIInput].uid), internalNodeIds[InternalNodes::MIDIInput]);
+    AudioProcessorGraph::Node* midiInputNode = createNode (getPluginDescriptor ("Internal", "Midi Input", AudioProcessorGraph::NodeID(internalNodeIds[InternalNodes::MIDIInput])), internalNodeIds[InternalNodes::MIDIInput]);
     internalNodeIds.add (midiInputNode->nodeID);
     setNodePosition (internalNodeIds[InternalNodes::MIDIInput], Point<double>(.4, .1));
 
 
-    AudioProcessorGraph::Node* inputNode =  createNode (getPluginDescriptor ("Internal", "Audio Input", internalNodeIds[InternalNodes::MIDIInput].uid), internalNodeIds[InternalNodes::AudioInput]);
+    AudioProcessorGraph::Node* inputNode =  createNode (getPluginDescriptor ("Internal", "Audio Input", AudioProcessorGraph::NodeID(internalNodeIds[InternalNodes::MIDIInput])), internalNodeIds[InternalNodes::AudioInput]);
     internalNodeIds.add (inputNode->nodeID);
     setNodePosition (internalNodeIds[InternalNodes::AudioInput], Point<double>(.6, .1));
 
-    AudioProcessorGraph::Node* outputNode =  createNode (getPluginDescriptor ("Internal", "Audio Output", internalNodeIds[InternalNodes::MIDIInput].uid), internalNodeIds[InternalNodes::AudioOutput]);
+    AudioProcessorGraph::Node* outputNode =  createNode (getPluginDescriptor ("Internal", "Audio Output", AudioProcessorGraph::NodeID(internalNodeIds[InternalNodes::MIDIInput])), internalNodeIds[InternalNodes::AudioOutput]);
     internalNodeIds.add (outputNode->nodeID);
     setNodePosition (internalNodeIds[InternalNodes::AudioOutput], Point<double>(.5, .8));
 }
@@ -85,7 +85,7 @@ bool AudioGraph::addPlugin (File inputFile, AudioProcessorGraph::NodeID nodeId)
             ScopedPointer<XmlElement> xml = createConnectionsXml();
             //delete graph.getNodeForId(nodeId)->getProcessor();
             graph.removeNode (nodeId);
-            AudioProcessorGraph::Node::Ptr node = createNode (getPluginDescriptor ("Cabbage", "Cabbage", nodeId.uid, inputFile.getFullPathName()), nodeId);
+            AudioProcessorGraph::Node::Ptr node = createNode (getPluginDescriptor ("Cabbage", "Cabbage", nodeId, inputFile.getFullPathName()), nodeId);
             //if(graph.getNodeForId(nodeId)->getProcessor()->isSuspended())
             //    return false;
             setNodePosition (nodeId, Point<double>(position.getX(), position.getY()));
@@ -97,7 +97,7 @@ bool AudioGraph::addPlugin (File inputFile, AudioProcessorGraph::NodeID nodeId)
     }
 
     setChangedFlag (true);
-    const AudioProcessorGraph::Node::Ptr node = createNode (getPluginDescriptor ("Cabbage", "Cabbage", nodeId.uid, inputFile.getFullPathName()), nodeId);
+    const AudioProcessorGraph::Node::Ptr node = createNode (getPluginDescriptor ("Cabbage", "Cabbage", nodeId, inputFile.getFullPathName()), nodeId);
     if(graph.getNodeForId(nodeId)->getProcessor()->isSuspended())
         return false;
 
@@ -131,7 +131,7 @@ void AudioGraph::showCodeEditorForNode (AudioProcessorGraph::NodeID nodeId)
         if (int32 (owner.getFileTab(i)->uniqueFileId == nodeId))
         {
             foundTabForNode = true;
-            owner.bringCodeEditorToFront (owner.getFileTabForNodeId(nodeId.uid));
+            owner.bringCodeEditorToFront (owner.getFileTabForNodeId(nodeId));
         }
     }
 
@@ -232,7 +232,7 @@ void AudioGraph::setDefaultConnections (AudioProcessorGraph::NodeID nodeId)
  
     AudioProcessorGraph::NodeAndChannel outputL = {(AudioProcessorGraph::NodeID) internalNodeIds[InternalNodes::AudioOutput], 0};
     AudioProcessorGraph::NodeAndChannel outputR = {(AudioProcessorGraph::NodeID) internalNodeIds[InternalNodes::AudioOutput], 1};
-    CabbageUtilities::debug(nodeId.uid);
+    CabbageUtilities::debug(nodeId);
     bool connectInput1 = graph.addConnection ({inputL, nodeL});
     bool connectInput2 = graph.addConnection ({inputR, nodeR});
 
@@ -408,9 +408,9 @@ const AudioProcessorGraph::Connection* AudioGraph::getConnectionBetween (uint32 
     
     for( auto& connection : currentConnections)
     {
-        if( connection.source.nodeID.uid == sourceFilterUID &&
+        if( connection.source.nodeID == sourceFilterUID &&
             connection.source.channelIndex == sourceFilterChannel &&
-            connection.destination.nodeID.uid ==  destFilterUID &&
+            connection.destination.nodeID ==  destFilterUID &&
             connection.destination.channelIndex == destFilterChannel)
         
             return &connection;
@@ -499,7 +499,7 @@ void AudioGraph::clear()
 
 Point<int> AudioGraph::getPositionOfCurrentlyOpenWindow (const AudioProcessorGraph::NodeID nodeId)
 {
-    if(nodeId.uid>3)
+    if(AudioProcessorGraph::NodeID(nodeId)>3)
     for (auto* w : activePluginWindows)
         if (w->node == graph.getNodeForId(nodeId))
             return w->getPosition();
@@ -640,7 +640,7 @@ static XmlElement* createNodeXml (AudioProcessorGraph::Node* const node) noexcep
 
 
     XmlElement* e = new XmlElement ("FILTER");
-    e->setAttribute ("uid", (int) node->nodeID.uid);
+    e->setAttribute ("uid", (int) node->nodeID);
     e->setAttribute ("x", node->properties ["x"].toString());
     e->setAttribute ("y", node->properties ["y"].toString());
     e->setAttribute ("uiLastX", node->properties ["uiLastX"].toString());
@@ -739,9 +739,9 @@ XmlElement* AudioGraph::createXml() const
 
         XmlElement* e = new XmlElement ("CONNECTION");
 
-        e->setAttribute ("srcFilter", (int) fc->source.nodeID.uid);
+        e->setAttribute ("srcFilter", (int) fc->source.nodeID);
         e->setAttribute ("srcChannel", fc->source.channelIndex);
-        e->setAttribute ("dstFilter", (int) fc->destination.nodeID.uid);
+        e->setAttribute ("dstFilter", (int) fc->destination.nodeID);
         e->setAttribute ("dstChannel", fc->destination.channelIndex);
 
         xml->addChildElement (e);
@@ -779,9 +779,9 @@ XmlElement* AudioGraph::createConnectionsXml() const
     {
         auto e = xml->createNewChildElement ("CONNECTION");
         
-        e->setAttribute ("srcFilter", (int) connection.source.nodeID.uid);
+        e->setAttribute ("srcFilter", (int) connection.source.nodeID);
         e->setAttribute ("srcChannel", connection.source.channelIndex);
-        e->setAttribute ("dstFilter", (int) connection.destination.nodeID.uid);
+        e->setAttribute ("dstFilter", (int) connection.destination.nodeID);
         e->setAttribute ("dstChannel", connection.destination.channelIndex);
     }
     

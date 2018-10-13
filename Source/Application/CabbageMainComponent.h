@@ -106,7 +106,7 @@ public:
     {
         for (auto &fileTab : fileTabs)
         {
-            if(fileTab->uniqueFileId.uid == nodeId)
+            if(fileTab->uniqueFileId == AudioProcessorGraph::NodeID(nodeId))
                 return fileTab;
         }
         jassertfalse;

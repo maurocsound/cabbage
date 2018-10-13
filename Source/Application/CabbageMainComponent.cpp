@@ -194,7 +194,7 @@ int CabbageMainComponent::getTabFileIndex (int32 nodeId)
 
     for ( auto tab : fileTabs)
     {
-        if (tab->uniqueFileId.uid == nodeId)
+        if (tab->uniqueFileId == AudioProcessorGraph::NodeID(nodeId))
         {
             foundFile = true;
             break;
@@ -783,7 +783,7 @@ CabbagePluginEditor* CabbageMainComponent::getCabbagePluginEditor()
     {
         const AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
-        if (nodeId.uid != 99)
+        if (nodeId != AudioProcessorGraph::NodeID(-99))
             if (AudioProcessorGraph::Node::Ptr f = audioGraph->graph.getNodeForId (nodeId))
             {
                 AudioProcessor* const processor = f->getProcessor();
@@ -818,7 +818,7 @@ void CabbageMainComponent::setEditMode (bool enable)
 {
     const AudioProcessorGraph::NodeID nodeId = fileTabs[currentFileIndex]->uniqueFileId;
 
-    if ( nodeId.uid == -99)
+    if ( nodeId == -99)
         return;
 
     const bool isCabbageFile = CabbageUtilities::hasCabbageTags (getCurrentCsdFile());
@@ -983,7 +983,7 @@ void CabbageMainComponent::openGraph (File fileToOpen)
         {
             openFile (files[i].getFullPathName());
             const int current = currentFileIndex;
-            fileTabs[currentFileIndex]->uniqueFileId.uid = uuids[i];
+            fileTabs[currentFileIndex]->uniqueFileId = uuids[i];
         }
     }
 
@@ -1387,10 +1387,10 @@ void CabbageMainComponent::runCsoundForNode (String file)
             //createAudioGraph(); //in future versions we can simply edit the node in question and reconnect within the graph
             AudioProcessorGraph::NodeID node = fileTabs[currentFileIndex]->uniqueFileId;
 
-            if (node.uid == -99)
+            if (node == -99)
             {
                 Uuid uniqueID;
-                node.uid = int32 (*uniqueID.getRawData());
+                node = int32 (*uniqueID.getRawData());
                 fileTabs[currentFileIndex]->uniqueFileId = node;
             }
 

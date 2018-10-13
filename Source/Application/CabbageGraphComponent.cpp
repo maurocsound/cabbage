@@ -144,7 +144,7 @@ void CabbageGraphComponent::updateComponents()
     {
         if (getComponentForFilter (f->nodeID) == 0)
         {
-            auto* comp = nodes.add (new CabbagePluginComponent(graph, f->nodeID.uid));
+            auto* comp = nodes.add (new CabbagePluginComponent(graph, f->nodeID));
             addAndMakeVisible (comp);
             comp->update();
         }

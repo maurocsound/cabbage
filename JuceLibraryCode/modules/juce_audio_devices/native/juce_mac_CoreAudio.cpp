@@ -289,7 +289,7 @@ public:
 
             if (OK (AudioObjectGetPropertyData (deviceID, &pa, 0, nullptr, &size, ranges)))
             {
-                static const double possibleRates[] = { 44100.0, 48000.0, 88200.0, 96000.0, 176400.0, 192000.0, 384000.0 };
+                static const double possibleRates[] = { 44100.0, 48000.0, 88200.0, 96000.0, 176400.0, 192000.0, 352800.0, 384000.0 };
 
                 for (int i = 0; i < numElementsInArray (possibleRates); ++i)
                 {
@@ -574,7 +574,7 @@ public:
 
                 OSType typeId = types[index];
 
-                OK (AudioObjectSetPropertyData (deviceID, &pa, 0, 0, sizeof (typeId), &typeId));
+                OK (AudioObjectSetPropertyData (deviceID, &pa, 0, nullptr, sizeof (typeId), &typeId));
             }
         }
     }
@@ -600,7 +600,7 @@ public:
         pa.mScope = kAudioObjectPropertyScopeGlobal;
         pa.mElement = kAudioObjectPropertyElementMaster;
         Float64 sr = newSampleRate;
-        return OK (AudioObjectSetPropertyData (deviceID, &pa, 0, 0, sizeof (sr), &sr));
+        return OK (AudioObjectSetPropertyData (deviceID, &pa, 0, nullptr, sizeof (sr), &sr));
     }
 
     //==============================================================================
@@ -643,7 +643,7 @@ public:
             pa.mElement = kAudioObjectPropertyElementMaster;
             UInt32 framesPerBuf = (UInt32) bufferSizeSamples;
 
-            if (! OK (AudioObjectSetPropertyData (deviceID, &pa, 0, 0, sizeof (framesPerBuf), &framesPerBuf)))
+            if (! OK (AudioObjectSetPropertyData (deviceID, &pa, 0, nullptr, sizeof (framesPerBuf), &framesPerBuf)))
             {
                 updateDetailsFromDevice();
                 error = "Couldn't change buffer size";
@@ -686,7 +686,7 @@ public:
                     else
                     {
                         OK (AudioDeviceDestroyIOProcID (deviceID, audioProcID));
-                        audioProcID = 0;
+                        audioProcID = {};
                     }
                 }
             }
@@ -712,7 +712,7 @@ public:
         {
             OK (AudioDeviceStop (deviceID, audioIOProc));
             OK (AudioDeviceDestroyIOProcID (deviceID, audioProcID));
-            audioProcID = 0;
+            audioProcID = {};
 
             started = false;
 
@@ -831,7 +831,7 @@ public:
     Array<double> sampleRates;
     Array<int> bufferSizes;
     AudioIODeviceCallback* callback = nullptr;
-    AudioDeviceIOProcID audioProcID = 0;
+    AudioDeviceIOProcID audioProcID = {};
 
 private:
     CriticalSection callbackLock;

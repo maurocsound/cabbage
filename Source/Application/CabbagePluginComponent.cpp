@@ -11,7 +11,7 @@ Author:  rory
 #include "CabbagePluginComponent.h"
 #include "CabbageGraphComponent.h"
 
-CabbagePluginComponent::CabbagePluginComponent(AudioGraph& p, uint32 id)  :
+CabbagePluginComponent::CabbagePluginComponent(AudioGraph& p, AudioProcessorGraph::NodeID id)  :
     graph (p),
     pluginID (id),
     lookAndFeel()
@@ -257,7 +257,8 @@ ConnectorComponent::ConnectorComponent (CabbageGraphComponent& panel_)
       lastInputX (0),
       lastInputY (0),
       lastOutputX (0),
-      lastOutputY (0)
+      lastOutputY (0),
+      connection { { {}, 0 }, { {}, 0 } }
 {
     setAlwaysOnTop (true);
 }

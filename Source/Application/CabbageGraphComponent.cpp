@@ -161,6 +161,7 @@ void CabbageGraphComponent::updateComponents()
             comp->setOutput (c.destination);
         }
     }
+
 }
 
 void CabbageGraphComponent::beginConnectorDrag (AudioProcessorGraph::NodeAndChannel newSource,
@@ -234,7 +235,7 @@ void CabbageGraphComponent::endDraggingConnector (const MouseEvent& e)
 
     if (auto* pin = findPinAt (e2.position))
     {
-        if (connection.source.nodeID == AudioProcessorGraph::NodeID())
+        if (connection.source.nodeID == AudioProcessorGraph::NodeID(0))
         {
             if (pin->isInput)
                 return;
@@ -252,7 +253,7 @@ void CabbageGraphComponent::endDraggingConnector (const MouseEvent& e)
         graph.graph.addConnection (connection);
     }
 
-
+    updateComponents();
 }
 
 

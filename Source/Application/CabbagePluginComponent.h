@@ -20,7 +20,7 @@ class PinComponent;
 class CabbagePluginComponent    : public Component
 {
 public:
-    CabbagePluginComponent (AudioGraph& p, uint32 id);
+    CabbagePluginComponent (AudioGraph& p, AudioProcessorGraph::NodeID id);
     ~CabbagePluginComponent();
     void mouseDown (const MouseEvent& e) override;
     void mouseDrag (const MouseEvent& e) override;
@@ -73,7 +73,7 @@ public:
 
     uint32 sourceFilterID, destFilterID;
     int sourceFilterChannel, destFilterChannel;
-    AudioProcessorGraph::Connection connection { { {}, 0 }, { {}, 0 } };
+    AudioProcessorGraph::Connection connection;
     Point<float> lastInputPos, lastOutputPos;
     
 private:

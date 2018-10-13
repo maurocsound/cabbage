@@ -70,7 +70,7 @@ public:
     AudioProcessorGraph::Node* createCabbageNode (const PluginDescription& desc, AudioProcessorGraph::NodeID nodeId);
     AudioProcessorGraph::Node* createInternalNode (const PluginDescription& desc, AudioProcessorGraph::NodeID nodeId);
 
-    const PluginDescription getPluginDescriptor (String type, String name, int32 nodeId, String inputfile = "");
+    const PluginDescription getPluginDescriptor (String type, String name, AudioProcessorGraph::NodeID nodeId, String inputfile = "");
     void setDefaultConnections (AudioProcessorGraph::NodeID nodeId);
     void createInternalFilters();
     void showCodeEditorForNode (AudioProcessorGraph::NodeID nodeId);
